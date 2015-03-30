@@ -1,0 +1,89 @@
+
+var CommentForm = React.createClass({displayName: "CommentForm",
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var author = this.refs.author.getDOMNode().value.trim();
+    var text = this.refs.text.getDOMNode().value.trim();
+    if (!text || !author) {
+      return;
+    }
+    this.props.onCommentSubmit({author: author, text: text});
+    this.refs.author.getDOMNode().value = '';
+    this.refs.text.getDOMNode().value = '';
+  },
+  render: function() {
+    return (
+      React.createElement("form", {className: "commentForm", onSubmit: this.handleSubmit}, 
+        React.createElement("input", {type: "text", placeholder: "式場名を入力", ref: "name"}), 
+
+        React.createElement("input", {type: "submit", value: "Post"})
+      )
+    );
+  }
+});
+
+var PlaceL = React.createClass({displayName: "PlaceL",
+  render: function() {
+    var rawMarkup = converter.makeHtml(this.props.children.toString());
+    return (
+      React.createElement("div", {className: "comment"}, 
+        React.createElement("h2", {className: "commentAuthor"}, 
+          this.props.author
+        ), 
+        React.createElement("span", {dangerouslySetInnerHTML: {__html: rawMarkup}})
+      )
+    );
+  }
+});
+
+
+var PlaceList = React.createClass({displayName: "PlaceList",
+  render: function() {
+    var placeNodes = this.props.data.map(function(place, index) {
+      return (
+        React.createElement(Place, {place: place.text, key: index}, 
+          place.name
+        )
+      );
+    });
+    return (
+      React.createElement("div", {className: "placeList"}, 
+        placeNodes
+      )
+    );
+  }
+});
+
+
+var CommentBox = React.createClass({displayName: "CommentBox",
+  getInitialState: function() {
+    return {data: [
+    {
+        "name": "式場名1",
+        "text": "テキスト1"
+    },
+    {
+        "name": "式場名2",
+        "text": "テキスト2"
+    }
+
+		]};
+  },
+
+  render: function() {
+    return (
+      React.createElement("div", {className: "commentBox"}, 
+				React.createElement("h1", null, "式場一覧"), 
+        React.createElement("p", null, "Hello, world! I am a CommentBox."), 
+				React.createElement(CommentForm, null), 
+				React.createElement(PlaceList, {data: this.state.data})
+      )
+    );
+  }
+});
+
+
+React.render(
+  React.createElement(CommentBox, null),
+  document.getElementById('content')
+);
